@@ -1,18 +1,23 @@
-class Buffer {
-    int* data;
-    size_t size;
-public:
-    Buffer(size_t n) : size(n) { data = new int[n]; }
-    ~Buffer() { delete[] data; }
+#include <iostream>
+#include <utility>
 
-    // Move constructor
-    Buffer(Buffer&& other) noexcept 
-        : data(other.data), size(other.size) {
-        other.data = nullptr;
-        other.size = 0;
-    }
+void process(int& x) {
+    std::cout << "lvalue reference\n";
+}
 
-    // Copy disabled (optional)
-    Buffer(const Buffer&) = delete;
-};
+void process(int&& x) {
+    std::cout << "rvalue reference\n";
+}
+
+template <typename T>
+void wrapper(T&& arg) {
+    process(std::forward<T>(arg)); // preserves original category
+}
+
+int main() {
+    int a = 10;
+
+    wrapper(a);        // lvalue → calls lvalue reference
+    wrapper(42);       // rvalue → calls rvalue reference
+}
 
